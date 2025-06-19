@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    SONAR_TOKEN = credentials('jenkins-token')
+    SONAR_TOKEN = credentials('jenkins_token')
     SNYK_TOKEN = credentials('snyk-token')
   }
 
