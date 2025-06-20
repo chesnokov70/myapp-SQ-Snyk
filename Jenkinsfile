@@ -14,14 +14,18 @@ pipeline {
     stage('Install Dependencies') {
       steps {
         sh 'bash -c "python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt"'
-
       }
     }
 
     stage('SonarQube Scan') {
       steps {
         withSonarQubeEnv('SonarCloud') {
-          sh 'sonar-scanner -Dsonar.projectKey=myapp -Dsonar.sources=.'
+          sh """
+            sonar-scanner \
+              -Dsonar.projectKey=myapp \
+              -Dsonar.sources=. \
+              -Dsonar.login=${SONAR_TOKEN}
+          """
         }
       }
     }
@@ -29,6 +33,7 @@ pipeline {
     stage('Snyk Scan') {
       steps {
         sh '''
+          set -e
           snyk auth ${SNYK_TOKEN}
           snyk test || true
         '''
@@ -53,5 +58,16 @@ pipeline {
       }
     }
   }
-}
 
+  post {
+    always {
+      echo 'Pipeline finished'
+    }
+    failure {
+      echo '❌ Build failed!'
+    }
+    success {
+      echo '✅ Build succeeded!'
+    }
+  }
+}
