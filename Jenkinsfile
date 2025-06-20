@@ -21,7 +21,7 @@ pipeline {
     stage('SonarQube Scan') {
       steps {
         withSonarQubeEnv('SonarCloud') {
-          sh 'sonar-scanner'
+          sh 'sonar-scanner -Dsonar.projectKey=myapp -Dsonar.sources=.'
         }
       }
     }
